@@ -1,12 +1,16 @@
-import { connect, Client } from 'mqtt'
+import { connect, Client, IClientOptions } from 'mqtt'
 
 interface Options {
-  endpoint: string;
-  username: string;
-  password: string;
-  pubTopic: string;
-  subTopic: string;
-  payload: any;
+  header: {
+    endpoint: string;
+    username: string;
+    password: string;
+  };
+  body: {
+    pubTopic: string;
+    subTopic: string;
+    payload: any;
+  };
 }
 
 export class Http2Mqtt {
@@ -17,13 +21,13 @@ export class Http2Mqtt {
 
   constructor (options: Options) {
     this.options = options
-    this.client = connect(`mqtt://${options.endpoint}`, {
-      password: options.password,
-      username: options.username,
-    })
+    this.client = connect(`mqtt://${options.header.endpoint}`, {
+      password: options.header.password,
+      username: options.header.username,
+    } as IClientOptions)
 
     this.client.on('connect', () => {
-      this.client.subscribe(options.subTopic, (err: Error | null) => {
+      this.client.subscribe(options.body.subTopic, (err: Error | null) => {
         if (err) {
           console.error(err)
         }
@@ -31,15 +35,19 @@ export class Http2Mqtt {
     })
 
     this.client.on('message', (topic: string, message: Buffer) => {
-      if (topic === options.subTopic) {
+      if (topic === options.body.subTopic) {
         this.responsePayload = JSON.parse(message.toString())
       }
     })
   }
 
-  async pubMsg (): Promise<any> {
+  public async pubMsg (): Promise<any> {
     return new Promise((resolve) => {
-      this.client.publish(this.options.pubTopic, JSON.stringify(this.options.payload))
+      this.client.publish(
+        this.options.body.pubTopic,
+        JSON.stringify(this.options.body.payload),
+      )
+
       const intervalId = setInterval(() => {
         if (this.responsePayload !== null) {
           clearInterval(intervalId)
