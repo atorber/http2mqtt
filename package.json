@@ -1,7 +1,7 @@
 {
-  "name": "wechaty-plugin-contrib",
-  "version": "1.12.1",
-  "description": "Wechaty Plugin Ecosystem Contrib Package",
+  "name": "http2mqtt",
+  "version": "0.1.0",
+  "description": "Using HTTP requests to publish mqtt messages",
   "type": "module",
   "exports": {
     ".": {
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "language-monitor": "^1.0.3",
+    "mqtt": "^3.0.0",
     "mustache": "^4.2.0",
     "qrcode-terminal": "^0.12.0"
   },
@@ -24,6 +25,7 @@
     "@chatie/git-scripts": "^0.6.2",
     "@chatie/semver": "^0.4.7",
     "@chatie/tsconfig": "^4.6.2",
+    "@types/mqtt": "^2.5.0",
     "@types/mustache": "^4.1.2",
     "wechaty": "^1.11.22",
     "wechaty-mocker": "^1.10.2",
@@ -46,19 +48,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wechaty/plugin-contrib.git"
+    "url": "git+https://github.com/atorber/http2mqtt.git"
   },
   "keywords": [
     "wechaty",
     "plugin",
     "contrib"
   ],
-  "author": "Huan LI <zixia@zixia.net> (李卓桓)",
+  "author": "atorber <atorber@163.com> (超哥)",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/wechaty/plugin-contrib/issues"
+    "url": "https://github.com/atorber/http2mqtt/issues"
   },
-  "homepage": "https://github.com/wechaty/plugin-contrib#readme",
+  "homepage": "https://github.com/atorber/http2mqtt#readme",
   "git": {
     "scripts": {
       "pre-push": "npx git-scripts-pre-push"
