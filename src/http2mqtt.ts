@@ -1,8 +1,10 @@
-import { connect, Client, IClientOptions } from 'mqtt'
+/* eslint-disable no-console */
+import mqtt from 'mqtt'
 import { decrypt, encrypt, getKey } from './utils.js'
 
-export interface Header {
+export interface Headers {
     endpoint: string;
+    port?:number;
     username: string;
     password: string;
 }
@@ -13,120 +15,105 @@ export interface Body {
     payload: any;
 }
 
+export interface ResponsePayload {
+  status: number;
+  body: any;
+}
+
 export interface Options {
-  header: Header;
+  headers: Headers;
   body: Body;
 }
 
 export class Http2Mqtt {
 
-  private responsePayload: any | null = null
-  private client: Client
-  private options: Options
+  private headers:Headers
+  private body:Body
+  private responsePayload!: ResponsePayload
 
-  constructor (options: Options) {
-    this.options = options
-    this.client = connect(`mqtt://${options.header.endpoint}`, {
-      password: options.header.password,
-      username: options.header.username,
-    } as IClientOptions)
-
-    this.client.on('connect', () => {
-      this.client.subscribe(options.body.subTopic, (err: Error | null) => {
-        if (err) {
-          console.error(err)
-        }
-      })
-    })
-
-    this.client.on('message', (topic: string, message: Buffer) => {
-      if (topic === options.body.subTopic) {
-        this.responsePayload = JSON.parse(message.toString())
-      }
-    })
+  constructor (ops:Options) {
+    this.headers = ops.headers
+    this.body = ops.body
+    this.responsePayload = { body:{}, status:200 }
   }
 
-  public async pubMsg (): Promise<any> {
-    return new Promise((resolve) => {
-      const payload = JSON.stringify(this.options.body.payload)
-      const key = getKey()
-      const encryptedText = encrypt(payload, key)
-      // console.log(`Encrypted Text: ${encryptedText}`)
-      const decryptedText = decrypt(encryptedText, key)
-      // console.log(`Decrypted Text: ${decryptedText}`)
-      this.client.publish(
-        this.options.body.pubTopic,
-        encryptedText,
-      )
+  async pubMessage () {
+    const endpoint: string = this.headers.endpoint || ''
+    const username: string = this.headers.username || ''
+    const password: string = this.headers.password || ''
+    const port:number = this.headers.port || 1883
 
-      const intervalId = setInterval(() => {
-        if (this.responsePayload !== null) {
-          clearInterval(intervalId)
+    const pubTopic: string = this.body.pubTopic || ''
+    const subTopic: string = this.body.subTopic || ''
+    const payload: any = this.body.payload || ''
+
+    const client = mqtt.connect(`mqtt://${endpoint}:${port}`, {
+      password,
+      username,
+    })
+
+    let timeout: any
+
+    return new Promise<ResponsePayload>((resolve) => {
+      client.on('connect', () => {
+        client.subscribe(subTopic, (err:any) => {
+          if (err) {
+            this.responsePayload.status = 500
+            this.responsePayload.body = { error: 'Failed to subscribe to topic' }
+            client.end()
+            resolve(this.responsePayload)
+            return
+          }
+
+          const payloadJsonstring = JSON.stringify(payload)
+          const key = getKey()
+          console.log(`key Text: ${key}`)
+          const encryptedText = encrypt(payloadJsonstring, key)
+          console.log(`Encrypted Text: ${encryptedText}`)
+          const decryptedText = decrypt(encryptedText, key)
+          console.log(`Decrypted Text: ${decryptedText}`)
+
+          client.publish(pubTopic, encryptedText, (err) => {
+            if (err) {
+              this.responsePayload.status = 500
+              this.responsePayload.body = { error: 'Failed to publish to topic' }
+              client.end()
+              resolve(this.responsePayload)
+
+            }
+          })
+
+          timeout = setTimeout(() => {
+            this.responsePayload.status = 408
+            this.responsePayload.body = { error: 'Request timed out' }
+            client.end()
+            resolve(this.responsePayload)
+          }, 10000) // 10 seconds
+        })
+      })
+
+      client.on('message', (topic, message) => {
+        if (topic === subTopic) {
+          clearTimeout(timeout)
+          this.responsePayload.body = {  error:'ok', message: message.toString() }
+          client.end()
           resolve(this.responsePayload)
-        } else {
-          resolve('超时了')
         }
-      }, 100)
+      })
+
+      client.on('error', (err) => {
+        this.responsePayload.status = 500
+        this.responsePayload.body = { error: err.message }
+        client.end()
+        resolve(this.responsePayload)
+      })
     })
   }
 
 }
 
-export class Http2Mqtt2 {
-
-  private header:Header
-  private body:Body
-  private responsePayload: any | null = null
-
-  constructor (ops:Options) {
-    this.header = ops.header
-    this.body = ops.body
-  }
-
-  async pubMessage () {
-    const { endpoint, username, password } = this.header
-    const { pubTopic, subTopic, payload } = this.body
-    const client = connect(endpoint, {
-      password,
-      username,
-    })
-    client.on('connect', () => {
-      client.subscribe(subTopic, (err:any) => {
-        if (err) {
-          this.responsePayload = { error: 'Failed to subscribe to topic' }
-          client.end()
-          return this.responsePayload
-        }
-
-        client.publish(pubTopic, payload, (err) => {
-          if (err) {
-            this.responsePayload = { error: 'Failed to publish to topic' }
-            client.end()
-          }
-        })
-
-        const timeout = setTimeout(() => {
-          this.responsePayload = { error: 'Request timed out' }
-          client.end()
-        }, 10000) // 10 seconds
-
-        client.on('message', (topic, message) => {
-          if (topic === subTopic) {
-            clearTimeout(timeout)
-            const messageJson = JSON.parse(message.toString())
-            this.responsePayload = { message:messageJson }
-            client.end()
-            return this.responsePayload
-          }
-        })
-      })
-    })
-
-    client.on('error', (err) => {
-      this.responsePayload = { error: err.message }
-      client.end()
-      return this.responsePayload
-    })
-  }
-
+export {
+  encrypt,
+  decrypt,
+  getKey,
 }

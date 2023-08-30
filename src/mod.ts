@@ -1,3 +1,4 @@
+import { Http2Mqtt } from './http2mqtt.js'
 import * as finders   from './finders/mod.js'
 import * as matchers  from './matchers/mod.js'
 import * as talkers   from './talkers/mod.js'
@@ -94,4 +95,5 @@ export {
   mappers,
   talkers,
   types,
+  Http2Mqtt,
 }
