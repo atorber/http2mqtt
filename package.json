@@ -1,6 +1,6 @@
 {
   "name": "http2mqtt",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Using HTTP requests to publish mqtt messages",
   "type": "module",
   "exports": {
@@ -80,6 +80,6 @@
     "check-coverage": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }
