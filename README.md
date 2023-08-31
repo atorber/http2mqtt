@@ -4,6 +4,8 @@
 
 使用http请求同步发送mqtt消息
 
+![http2mqtt](./docs//images/http2mqtt.jpg)
+
 ## 快速开始
 
 ```
