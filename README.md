@@ -8,7 +8,7 @@
 
 ## 快速开始
 
-```
+```ts
 /* eslint-disable no-console */
 import Koa from 'koa'
 import Router from 'koa-router'
@@ -46,7 +46,7 @@ app.listen(PORT, () => {
 
 启动服务
 
-```
+```shell
 npm run quick
 ```
 
