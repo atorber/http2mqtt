@@ -2,11 +2,13 @@
   "extends": "@chatie/tsconfig",
   "compilerOptions": {
     "outDir": "dist/esm",
+    "ignoreDeprecations": "5.0",
   },
   "exclude": [
     "node_modules/",
     "dist/",
     "tests/fixtures/",
+    "tests/fixtures/smoke-testing.ts",
   ],
   "include": [
     "bin/*.ts",
