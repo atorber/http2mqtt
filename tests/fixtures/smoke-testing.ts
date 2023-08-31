@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 import {
   VERSION,
-}                       from 'wechaty-plugin-contrib'
+}                       from '../../src/mod.js'
 
 async function main () {
   if (VERSION === '0.0.0') {
