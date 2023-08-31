@@ -3,7 +3,7 @@ import Koa from 'koa'
 import Router from 'koa-router'
 import bodyParser from 'koa-bodyparser'
 
-import { type Headers, type Body, Http2Mqtt, type ResponsePayload } from '../src/http2mqtt.js'
+import { type Headers, type Body, Http2Mqtt, type ResponsePayload } from '../src/http-to-mqtt.js'
 
 const app = new Koa()
 const router = new Router()

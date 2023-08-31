@@ -1,4 +1,4 @@
-import { Http2Mqtt } from './http2mqtt.js'
+import { Http2Mqtt } from './http-to-mqtt.js'
 import * as finders   from './finders/mod.js'
 import * as matchers  from './matchers/mod.js'
 import * as talkers   from './talkers/mod.js'
