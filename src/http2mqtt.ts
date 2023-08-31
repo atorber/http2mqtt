@@ -69,9 +69,9 @@ export class Http2Mqtt {
           const key = getKey()
           console.log(`key Text: ${key}`)
           const encryptedText = encrypt(payloadJsonstring, key)
-          console.log(`Encrypted Text: ${encryptedText}`)
-          const decryptedText = decrypt(encryptedText, key)
-          console.log(`Decrypted Text: ${decryptedText}`)
+          // console.log(`Encrypted Text: ${encryptedText}`)
+          // const decryptedText = decrypt(encryptedText, key)
+          // console.log(`Decrypted Text: ${decryptedText}`)
 
           client.publish(pubTopic, encryptedText, (err) => {
             if (err) {
