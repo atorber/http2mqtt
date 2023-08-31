@@ -79,6 +79,6 @@
     "check-coverage": false
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   }
 }
