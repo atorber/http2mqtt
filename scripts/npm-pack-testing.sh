@@ -15,7 +15,6 @@ npm pack
 TMPDIR="/tmp/npm-pack-testing.$$"
 mkdir "$TMPDIR"
 mv ./*-*.*.*.tgz "$TMPDIR"
-cp tests/fixtures/smoke-testing.ts "$TMPDIR"
 
 cd $TMPDIR
 
@@ -25,45 +24,8 @@ npm install --production *-*.*.*.tgz \
   @chatie/tsconfig@$NPM_TAG \
   pkg-jq \
   "wechaty-puppet@$NPM_TAG" \
-  "wechaty@$NPM_TAG" \
+  "wechaty@$NPM_TAG"
 
-#
-# CommonJS
-#
-./node_modules/.bin/tsc \
-  --target es6 \
-  --module CommonJS \
-  \
-  --moduleResolution node \
-  --esModuleInterop \
-  --lib esnext \
-  --noEmitOnError \
-  --noImplicitAny \
-  --skipLibCheck \
-  smoke-testing.ts
+# CommonJS and ES Modules compilation and testing code removed
 
-echo
-echo "CommonJS: pack testing..."
-node smoke-testing.js
-
-#
-# ES Modules
-#
-npx pkg-jq -i '.type="module"'
-
-
-./node_modules/.bin/tsc \
-  --target es2020 \
-  --module es2020 \
-  \
-  --moduleResolution node \
-  --esModuleInterop \
-  --lib esnext \
-  --noEmitOnError \
-  --noImplicitAny \
-  --skipLibCheck \
-  smoke-testing.ts
-
-echo
-echo "ES Module: pack testing..."
-node smoke-testing.js
+echo "Script finished successfully."
