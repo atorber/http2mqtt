@@ -44,7 +44,7 @@ export class Http2Mqtt {
     const port:number = this.headers.port || 1883
 
     const pubTopic: string = this.body.pubTopic || ''
-    const subTopic: string = this.body.subTopic || ''
+    const subTopic: string = this.body.subTopic || this.body.pubTopic || ''
     const payload: any = this.body.payload || ''
 
     const client = mqtt.connect(`mqtt://${endpoint}:${port}`, {
