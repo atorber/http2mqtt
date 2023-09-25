@@ -1,109 +1,148 @@
+/* eslint-disable sort-keys */
 /* eslint-disable no-console */
 import mqtt from 'mqtt'
-import { decrypt, encrypt, getKey } from './utils.js'
+import { decrypt, encrypt, getKey, DecryptedMessage } from './utils.js'
+import jsonata from 'jsonata'
 
+// 定义接口：请求头部信息
 export interface Headers {
-    endpoint: string;
-    port?:number;
-    username: string;
-    password: string;
+  endpoint: string;
+  port?: number;
+  username: string;
+  password: string;
+  clientid?: string;
+  secretkey?: string;
 }
 
+// 定义接口：请求查询参数
+export interface Query {
+  RequestTopic: string;
+  ResponseTopic?: string;
+  Convert?: string;
+}
+
+// 定义接口：请求体内容
 export interface Body {
-    pubTopic: string;
-    subTopic: string;
-    payload: any;
+  [key: string]: any;
 }
 
+// 定义接口：响应内容
 export interface ResponsePayload {
   status: number;
   body: any;
 }
 
+// 定义接口：请求选项
 export interface Options {
   headers: Headers;
   body: Body;
+  query: Query;
 }
 
+// 主类：处理HTTP到MQTT的转换
 export class Http2Mqtt {
 
-  private headers:Headers
-  private body:Body
-  private responsePayload!: ResponsePayload
+  private responsePayload: ResponsePayload = { body: {}, status: 200 }
+  private ops: Options
 
-  constructor (ops:Options) {
-    this.headers = ops.headers
-    this.body = ops.body
-    this.responsePayload = { body:{}, status:200 }
+  constructor (ops: Options) {
+    this.ops = ops
   }
 
-  async pubMessage () {
-    const endpoint: string = this.headers.endpoint || ''
-    const username: string = this.headers.username || ''
-    const password: string = this.headers.password || ''
-    const port:number = this.headers.port || 1883
+  async pubMessage (): Promise<ResponsePayload> {
+    const {
+      endpoint = '',
+      username = '',
+      password = '',
+      port = 1883,
+      secretkey: key,
+    } = this.ops.headers
 
-    const pubTopic: string = this.body.pubTopic || ''
-    const subTopic: string = this.body.subTopic || this.body.pubTopic || ''
-    const payload: any = this.body.payload || ''
+    const { RequestTopic: pubTopic = '', ResponseTopic: subTopic = pubTopic, Convert } = this.ops.query
 
+    let payload: any = this.ops.body
+
+    // 如果存在Convert参数，使用jsonata进行数据转换
+    if (Convert) {
+      const expression = jsonata(Convert)
+      payload = await expression.evaluate(payload)
+    }
+
+    payload = JSON.stringify(payload)
+
+    // 如果存在密钥，对消息进行加密
+    if (key) {
+      payload = JSON.stringify(encrypt(payload, key))
+    }
+
+    // 连接到MQTT服务器
     const client = mqtt.connect(`mqtt://${endpoint}:${port}`, {
       password,
       username,
     })
 
-    let timeout: any
-
     return new Promise<ResponsePayload>((resolve) => {
+      let timeout: any
+
       client.on('connect', () => {
-        client.subscribe(subTopic, (err:any) => {
+        client.subscribe(subTopic, (err: any) => {
           if (err) {
-            this.responsePayload.status = 500
-            this.responsePayload.body = { error: 'Failed to subscribe to topic' }
+            this.responsePayload = {
+              status: 500,
+              body: { error: 'Failed to subscribe to topic' },
+            }
             client.end()
             resolve(this.responsePayload)
             return
           }
 
-          const payloadJsonstring = JSON.stringify(payload)
-          const key = getKey()
-          console.log(`key Text: ${key}`)
-          const encryptedText = encrypt(payloadJsonstring, key)
-          // console.log(`Encrypted Text: ${encryptedText}`)
-          // const decryptedText = decrypt(encryptedText, key)
-          // console.log(`Decrypted Text: ${decryptedText}`)
-
-          client.publish(pubTopic, encryptedText, (err) => {
+          client.publish(pubTopic, payload, (err) => {
             if (err) {
-              this.responsePayload.status = 500
-              this.responsePayload.body = { error: 'Failed to publish to topic' }
+              this.responsePayload = {
+                status: 500,
+                body: { error: 'Failed to publish to topic' },
+              }
               client.end()
               resolve(this.responsePayload)
-
             }
           })
 
+          // 设置15秒超时
           timeout = setTimeout(() => {
-            this.responsePayload.status = 408
-            this.responsePayload.body = { error: 'Request timed out' }
+            this.responsePayload = {
+              status: 408,
+              body: { error: 'Request timed out' },
+            }
             client.end()
             resolve(this.responsePayload)
-          }, 10000) // 10 seconds
+          }, 15000)
         })
       })
 
       client.on('message', (topic, message) => {
         if (topic === subTopic) {
+          let messageText = message.toString()
+
+          // 如果存在密钥，对收到的消息进行解密
+          if (key) {
+            messageText = decrypt(JSON.parse(messageText) as DecryptedMessage, key)
+          }
+
           clearTimeout(timeout)
-          this.responsePayload.body = {  error:'ok', message: message.toString() }
+          this.responsePayload = {
+            body: { error: 'ok', message: JSON.parse(messageText) },
+            status: 200,
+          }
           client.end()
           resolve(this.responsePayload)
         }
       })
 
       client.on('error', (err) => {
-        this.responsePayload.status = 500
-        this.responsePayload.body = { error: err.message }
+        this.responsePayload = {
+          status: 500,
+          body: { error: err.message },
+        }
         client.end()
         resolve(this.responsePayload)
       })

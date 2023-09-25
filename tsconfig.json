@@ -12,6 +12,7 @@
   ],
   "include": [
     "bin/*.ts",
+    "examples/**/*.js",
     "examples/**/*.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
