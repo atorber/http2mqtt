@@ -16,9 +16,7 @@ router.post('/mqtt', async (ctx) => {
   console.debug(JSON.stringify(ctx))
 
   // 将请求头部的键转换为小写，以确保统一性
-  const headers: Headers = Object.fromEntries(
-    Object.entries(ctx.request.headers).map(([ key, value ]) => [ key.toLowerCase(), value ]),
-  )  as unknown as Headers
+  const headers: Headers = ctx.request.headers as unknown as Headers
 
   const body: Body = ctx.request.body as Body
   const query: Query = ctx.request.query as unknown as Query

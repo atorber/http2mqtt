@@ -46,6 +46,9 @@ export class Http2Mqtt {
   private ops: Options
 
   constructor (ops: Options) {
+    ops.headers = Object.fromEntries(
+      Object.entries(ops.headers).map(([ key, value ]) => [ key.toLowerCase(), value ]),
+    ) as Headers
     this.ops = ops
   }
 
