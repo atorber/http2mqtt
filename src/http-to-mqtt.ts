@@ -5,7 +5,7 @@ import { decrypt, encrypt, getKey, DecryptedMessage } from './utils.js'
 import jsonata from 'jsonata'
 
 // 定义接口：请求头部信息
-export interface Headers {
+type Headers = {
   endpoint: string;
   port?: number;
   username: string;
@@ -15,32 +15,32 @@ export interface Headers {
 }
 
 // 定义接口：请求查询参数
-export interface Query {
+type Query = {
   RequestTopic: string;
   ResponseTopic?: string;
   Convert?: string;
 }
 
 // 定义接口：请求体内容
-export interface Body {
+type Body = {
   [key: string]: any;
 }
 
 // 定义接口：响应内容
-export interface ResponsePayload {
+type ResponsePayload = {
   status: number;
   body: any;
 }
 
 // 定义接口：请求选项
-export interface Options {
+type Options = {
   headers: Headers;
   body: Body;
   query: Query;
 }
 
 // 主类：处理HTTP到MQTT的转换
-export class Http2Mqtt {
+class Http2Mqtt {
 
   private responsePayload: ResponsePayload = { body: {}, status: 200 }
   private ops: Options
@@ -155,7 +155,15 @@ export class Http2Mqtt {
 }
 
 export {
+  Http2Mqtt,
   encrypt,
   decrypt,
   getKey,
+}
+
+export type {
+  Body,
+  Headers,
+  Query, ResponsePayload,
+  Options,
 }
