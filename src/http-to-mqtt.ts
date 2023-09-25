@@ -53,6 +53,7 @@ export class Http2Mqtt {
   }
 
   async pubMessage (): Promise<ResponsePayload> {
+    console.debug('this.ops\n', JSON.stringify(this.ops))
     const {
       endpoint = '',
       username = '',
@@ -85,7 +86,16 @@ export class Http2Mqtt {
     })
 
     return new Promise<ResponsePayload>((resolve) => {
-      let timeout: any
+
+      // 设置15秒超时
+      const timeout: any = setTimeout(() => {
+        this.responsePayload = {
+          status: 408,
+          body: { error: 'Request timed out' },
+        }
+        client.end()
+        resolve(this.responsePayload)
+      }, 15000)
 
       client.on('connect', () => {
         client.subscribe(subTopic, (err: any) => {
@@ -109,16 +119,6 @@ export class Http2Mqtt {
               resolve(this.responsePayload)
             }
           })
-
-          // 设置15秒超时
-          timeout = setTimeout(() => {
-            this.responsePayload = {
-              status: 408,
-              body: { error: 'Request timed out' },
-            }
-            client.end()
-            resolve(this.responsePayload)
-          }, 15000)
         })
       })
 

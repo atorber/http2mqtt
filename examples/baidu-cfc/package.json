@@ -10,6 +10,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-      "http2mqtt":"^0.3.5"
+      "http2mqtt":"^0.3.6"
     }
   }
