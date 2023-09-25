@@ -72,45 +72,54 @@ app.listen(PORT, () => {
 npm run start:koa
 ```
 
-发起http请求
+## 请求示例
 
-- 完整路径
+- 请求
 
-127.0.0.1:3000/mqtt
+```http
+POST /mqtt?RequestTopic=my/topic&Convert={"transformed":$.original}
+Headers:
+  endpoint: mqtt.example.com
+  username: myuser
+  password: mypassword
 
-- method
-
-POST
-
-- path
-
-/mqtt
-
-- headers
-
-``` JSON
+Body:
 {
-    "endpoint":"broker.emqx.io",
-    "port":1883,
-    "username":"",
-    "password":"",
-    "secretkey":""
+  "original": "data"
 }
 ```
 
-- body
+- 响应
 
-```JSON
+```json
 {
-    "xxx":{
-        "a":10011112
-    }
+  "error": "ok",
+  "message": {
+    "transformed": "data"
+  }
 }
 ```
+
+## 百度云部署
+
+```shell
+cd examples/baidu-cfc
+npm i
+```
+
+将index.js、package.json以及node_modules文件夹整理打包上传到百度云函数计算，设置http触发器
 
 ## 历史版本
 
-### main v0.2.0
+### main v0.3.0
+
+1. 固化参数
+
+2. 百度云示例代码、koa示例代码等
+
+3. 增加api接口说明
+
+### v0.2.0
 
 1. 构建流水线自动发包
 
