@@ -33,3 +33,11 @@ export function decrypt (message: DecryptedMessage, keyBase64: string): any {
 export function getKey () {
   return crypto.randomBytes(32).toString('base64')
 }
+
+// 使用基础字符串生成密钥
+export function getKeyByBasicString(basicString) {
+  const hash = crypto.createHash('sha256');
+  hash.update(basicString);
+  const key = hash.digest('base64');
+  return key;
+}
