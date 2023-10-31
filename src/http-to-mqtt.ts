@@ -16,9 +16,9 @@ type Headers = {
 
 // 定义接口：请求查询参数
 type Query = {
-  RequestTopic: string;
-  ResponseTopic?: string;
-  Convert?: string;
+  requesttopic: string;
+  responsetopic?: string;
+  convert?: string;
 }
 
 // 定义接口：请求体内容
@@ -49,6 +49,9 @@ class Http2Mqtt {
     ops.headers = Object.fromEntries(
       Object.entries(ops.headers).map(([ key, value ]) => [ key.toLowerCase(), value ]),
     ) as Headers
+    ops.query = Object.fromEntries(
+      Object.entries(ops.query).map(([ key, value ]) => [ key.toLowerCase(), value ]),
+    ) as Query
     this.ops = ops
   }
 
@@ -62,13 +65,13 @@ class Http2Mqtt {
       secretkey: key,
     } = this.ops.headers
 
-    const { RequestTopic: pubTopic = '', ResponseTopic: subTopic = pubTopic, Convert } = this.ops.query
+    const { requesttopic: pubTopic = '', responsetopic: subTopic = pubTopic, convert } = this.ops.query
 
     let payload: any = this.ops.body
 
     // 如果存在Convert参数，使用jsonata进行数据转换
-    if (Convert) {
-      const expression = jsonata(Convert)
+    if (convert) {
+      const expression = jsonata(convert)
       payload = await expression.evaluate(payload)
     }
 

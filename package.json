@@ -81,7 +81,7 @@
     "check-coverage": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   },
   "git": {
     "scripts": {
