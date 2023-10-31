@@ -35,9 +35,9 @@ export function getKey () {
 }
 
 // 使用基础字符串生成密钥
-export function getKeyByBasicString(basicString) {
-  const hash = crypto.createHash('sha256');
-  hash.update(basicString);
-  const key = hash.digest('base64');
-  return key;
+export function getKeyByBasicString (basicString: string) {
+  const hash = crypto.createHash('sha256')
+  hash.update(basicString)
+  const key = hash.digest('base64')
+  return key
 }
