@@ -1,6 +1,6 @@
 {
   "name": "http2mqtt",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "description": "Using HTTP requests to publish mqtt messages",
   "type": "module",
   "exports": {
