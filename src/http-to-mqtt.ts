@@ -79,8 +79,9 @@ class Http2Mqtt {
     } = this.ops.headers
 
     const { requesttopic, responsetopic, convert } = this.ops.query
-    const pubTopic = requesttopic || `http2mqtt/request/${Math.random()}`
-    const subTopic = responsetopic || `http2mqtt/response/${Math.random()}`
+    const reqId = Math.random()
+    const pubTopic = requesttopic || `http2mqtt/request/${reqId}`
+    const subTopic = responsetopic || `http2mqtt/response/${reqId}`
     let payload: any = this.ops.body
 
     // 如果存在Convert参数，使用jsonata进行数据转换
