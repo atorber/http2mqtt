@@ -46,9 +46,18 @@ class Http2Mqtt {
   private ops: Options
 
   constructor (ops: Options) {
-    ops.headers = Object.fromEntries(
+    const headers = Object.fromEntries(
       Object.entries(ops.headers).map(([ key, value ]) => [ key.toLowerCase(), value ]),
-    ) as Headers
+    )
+    if (headers['authorization']) {
+      // 对Authorization头部进行解析，删除开头的Bearer ，并对token进行base64解密
+      const authorization = headers['authorization'] as string
+      const token = authorization.split(' ')[1] as string
+      const decodedToken = Buffer.from(token, 'base64').toString('utf-8')
+      ops.headers = JSON.parse(decodedToken) as Headers
+    } else {
+      ops.headers = headers as Headers
+    }
     ops.query = Object.fromEntries(
       Object.entries(ops.query).map(([ key, value ]) => [ key.toLowerCase(), value ]),
     ) as Query
