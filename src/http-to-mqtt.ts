@@ -163,7 +163,7 @@ class Http2Mqtt {
 
           clearTimeout(timeout)
           this.responsePayload = {
-            body: { error: 'ok', message: JSON.parse(messageText) },
+            body: JSON.parse(messageText),
             status: 200,
           }
           client.end()
