@@ -50,6 +50,7 @@ class Http2Mqtt {
       Object.entries(ops.headers).map(([ key, value ]) => [ key.toLowerCase(), value ]),
     )
     if (headers['authorization']) {
+      console.log('headers中包含authorization\n', headers)
       // 对Authorization头部进行解析，删除开头的Bearer ，并对token进行base64解密
       const authorization = headers['authorization'] as string
       const token = authorization.split(' ')[1] as string
@@ -68,7 +69,7 @@ class Http2Mqtt {
   }
 
   async pubMessage (): Promise<ResponsePayload> {
-    console.debug('this.ops\n', JSON.stringify(this.ops))
+    console.debug('pubMessage this.ops\n', JSON.stringify(this.ops))
     const {
       endpoint = '',
       username = '',
