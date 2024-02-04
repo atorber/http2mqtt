@@ -80,9 +80,20 @@ class Http2Mqtt {
     } = this.ops.headers
 
     const { requesttopic, responsetopic, convert } = this.ops.query
-    const reqId = v4()
-    const pubTopic = requesttopic === 'http2mqtt/test' ? 'http2mqtt/test' : (requesttopic || `http2mqtt/request/${reqId}`)
-    const subTopic = requesttopic === 'http2mqtt/test' ? 'http2mqtt/test' : (responsetopic || `http2mqtt/response/${reqId}`)
+    let pubTopic = requesttopic || ''
+    let subTopic = responsetopic || ''
+
+    if (requesttopic === 'http2mqtt/test') {
+      subTopic = 'http2mqtt/test'
+      pubTopic = 'http2mqtt/test'
+    }
+
+    if (!pubTopic || !subTopic) {
+      const reqId = v4()
+      pubTopic = `http2mqtt/request/${reqId}`
+      subTopic = `http2mqtt/response/${reqId}`
+    }
+
     let payload: any = this.ops.body
 
     // 如果存在Convert参数，使用jsonata进行数据转换
