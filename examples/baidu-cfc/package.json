@@ -10,6 +10,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "http2mqtt": "^0.5.6"
+        "http2mqtt": "^0.5.7",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "@types/uuid": "^9.0.8"
     }
 }

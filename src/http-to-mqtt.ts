@@ -3,6 +3,7 @@
 import mqtt from 'mqtt'
 import { decrypt, encrypt, getKey, DecryptedMessage } from './utils.js'
 import jsonata from 'jsonata'
+import { v4 } from 'uuid'
 
 // 定义接口：请求头部信息
 type Headers = {
@@ -79,7 +80,7 @@ class Http2Mqtt {
     } = this.ops.headers
 
     const { requesttopic, responsetopic, convert } = this.ops.query
-    const reqId = Math.random()
+    const reqId = v4()
     const pubTopic = requesttopic || `http2mqtt/request/${reqId}`
     const subTopic = responsetopic || `http2mqtt/response/${reqId}`
     let payload: any = this.ops.body
