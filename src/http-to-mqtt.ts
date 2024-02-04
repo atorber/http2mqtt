@@ -55,7 +55,9 @@ class Http2Mqtt {
       const token = authorization.split(' ')[1] as string
       const decodedToken = Buffer.from(token, 'base64').toString('utf-8')
       console.log('decodedToken\n', decodedToken)
-      ops.headers = JSON.parse(decodedToken) as Headers
+      ops.headers = Object.fromEntries(
+        Object.entries(JSON.parse(decodedToken)).map(([ key, value ]) => [ key.toLowerCase(), value ]),
+      ) as Headers
     } else {
       ops.headers = headers as Headers
     }
