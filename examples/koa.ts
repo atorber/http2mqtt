@@ -20,8 +20,10 @@ router.post('/mqtt', async (ctx) => {
 
   const body: Body = ctx.request.body as Body
   const query: Query = ctx.request.query as unknown as Query
+  const method = ctx.request.method as 'POST'|'GET'|'PUT'|'DELETE'
+  const path = ctx.request.path
 
-  const ops = { body, headers, query }
+  const ops = { body, headers, method, path, query }
   console.debug(JSON.stringify(ops))
 
   // 使用Http2Mqtt类处理请求
