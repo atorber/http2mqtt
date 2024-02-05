@@ -18,7 +18,8 @@
     "@types/jsonata": "^1.5.1",
     "crypto": "^1.0.1",
     "jsonata": "^2.0.3",
-    "mqtt": "^3.0.0"
+    "mqtt": "^3.0.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@chatie/eslint-config": "^1.0.4",
@@ -52,7 +53,7 @@
     "quick": "cross-env NODE_OPTIONS=\"--no-warnings --loader=ts-node/esm\" node examples/quick-start.ts",
     "start:koa": "cross-env NODE_OPTIONS=\"--no-warnings --loader=ts-node/esm\" node examples/koa.ts",
     "start:express": "cross-env NODE_OPTIONS=\"--no-warnings --loader=ts-node/esm\" node examples/express.ts",
-    "start": "npm run example",
+    "start": "npm run quick",
     "test": "npm-run-all lint",
     "test-test": "npm-run-all lint test:unit",
     "test:pack": "bash -x scripts/npm-pack-testing.sh",

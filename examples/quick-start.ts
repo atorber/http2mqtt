@@ -4,7 +4,7 @@ import { Http2Mqtt, ResponsePayload } from '../src/http-to-mqtt.js'
 const ops = {
   body: {},
   headers: {
-    Authorization: 'Bearer eyJlbmRwb2ludCI6ImJyb2tlci5lbXF4LmlvIiwidXNlcm5hbWUiOiIiLCJwYXNzd29yZCI6IiIsImNsaWVudGlkIjoiaHR0cDJtcXR0IiwicG9ydCI6IjE4ODMiLCJzZWNyZXRrZXkiOiIiLCJSZXF1ZXN0VG9waWMiOiJodHRwMm1xdHQvMTIzNDU2IiwiU',
+    Authorization: 'Bearer eyJlbmRwb2ludCI6ImJyb2tlci5lbXF4LmlvIiwidXNlcm5hbWUiOiIiLCJwYXNzd29yZCI6IiIsImNsaWVudGlkIjoiaHR0cDJtcXR0IiwicG9ydCI6IjE4ODMiLCJzZWNyZXRrZXkiOiIiLCJSZXF1ZXN0VG9waWMiOiJodHRwMm1xdHQvMTIzNDU2IiwiUmVzcG9uc2VUb3BpYyI6Imh0dHAybXF0dC8xMjM0NTYvOTk5OTk5IiwiQ29udmVydCI6IiQuYWJjIn0',
     Connection: 'close',
     'Content-Length': '2',
     'Content-Type': 'application/json',

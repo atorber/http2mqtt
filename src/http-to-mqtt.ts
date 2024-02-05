@@ -66,7 +66,9 @@ class Http2Mqtt {
       console.log('headers中包含authorization\n', headers)
       // 对Authorization头部进行解析，删除开头的Bearer ，并对token进行base64解密
       const authorization = headers['authorization'] as string
+      console.debug(authorization)
       const tokenJoin = authorization.split(' ')[1] as string
+      console.debug(tokenJoin)
       let mqttToken = ''
       let token = ''
       if (tokenJoin.includes('http2mqtt')) {
@@ -76,6 +78,7 @@ class Http2Mqtt {
       } else {
         mqttToken = tokenJoin
       }
+      console.debug(mqttToken)
       let decodedToken:any = Buffer.from(mqttToken, 'base64')
       console.log('decodedToken:', decodedToken)
       decodedToken = decodedToken.toString('utf8')
