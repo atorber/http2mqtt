@@ -114,14 +114,14 @@ class Http2Mqtt {
     let pubTopic = `http2mqtt/request/${reqId}`
     let subTopic = `http2mqtt/response/${reqId}`
 
-    if (topic === 'http2mqtt/test') {
-      subTopic = `http2mqtt/test/${reqId}`
-      pubTopic = `http2mqtt/test/${reqId}`
-    }
-
     if (topic) {
       pubTopic = `${topic}/request/${reqId}`
       subTopic = `${topic}/response/${reqId}`
+    }
+
+    if (topic === 'http2mqtt/test') {
+      subTopic = `http2mqtt/test/${reqId}`
+      pubTopic = `http2mqtt/test/${reqId}`
     }
 
     console.debug('pubTopic\n', pubTopic)
