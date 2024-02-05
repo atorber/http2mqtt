@@ -85,9 +85,9 @@ class Http2Mqtt {
       ops.headers = headers as Headers
       this.mqttOps = headers as unknown as MqttOptions
     }
-    const { topic, convert } = ops.query
+    const { _topic, _rule } = ops.query
     this.configOps = {
-      topic, convert,
+      topic:_topic, convert:_rule,
     }
     // ops.query = Object.fromEntries(
     //   Object.entries(ops.query).map(([ key, value ]) => [ key.toLowerCase(), value ]),
@@ -124,6 +124,9 @@ class Http2Mqtt {
       subTopic = `${topic}/response/${reqId}`
     }
 
+    console.debug('pubTopic\n', pubTopic)
+    console.debug('subTopic\n', subTopic)
+
     let payload: any = this.ops
 
     // 如果存在Convert参数，使用jsonata进行数据转换
@@ -133,6 +136,7 @@ class Http2Mqtt {
     }
 
     payload = JSON.stringify(payload)
+    console.debug('payload\n', payload)
 
     // 如果存在密钥，对消息进行加密
     if (key) {
@@ -154,10 +158,12 @@ class Http2Mqtt {
           body: { error: 'Request timed out' },
         }
         client.end()
+        console.debug('timeout\n', this.responsePayload)
         resolve(this.responsePayload)
       }, 15000)
 
       client.on('connect', () => {
+        console.debug('connected to mqtt server')
         client.subscribe(subTopic, (err: any) => {
           if (err) {
             this.responsePayload = {
@@ -165,6 +171,7 @@ class Http2Mqtt {
               body: { error: 'Failed to subscribe to topic' },
             }
             client.end()
+            console.debug('subscribe error\n', this.responsePayload)
             resolve(this.responsePayload)
             return
           }
@@ -176,6 +183,7 @@ class Http2Mqtt {
                 body: { error: 'Failed to publish to topic' },
               }
               client.end()
+              console.debug('publish error\n', this.responsePayload)
               resolve(this.responsePayload)
             }
           })
