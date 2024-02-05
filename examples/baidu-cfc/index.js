@@ -7,7 +7,7 @@ exports.handler = async (event, context, callback) => {
   const path = event.path
   const headers = event.headers
   const query = event.queryStringParameters
-  const bodyString = event.body
+  const bodyString = event.body || '{}'
   const body = JSON.parse(bodyString)
   const ops = { body, headers, query, method, path }
 
