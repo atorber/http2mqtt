@@ -42,7 +42,7 @@ type Options = {
   headers: Headers;
   body: Body;
   query: Query;
-  method:'POST'|'GET'|'PUT'|'DELETE';
+  method:'POST'|'GET'|'PUT'|'DELETE'|string;
   path: string;
 }
 
@@ -76,8 +76,10 @@ class Http2Mqtt {
       } else {
         mqttToken = tokenJoin
       }
-      const decodedToken = Buffer.from(mqttToken, 'base64').toString('utf-8')
-      console.log('decodedToken\n', decodedToken)
+      let decodedToken:any = Buffer.from(mqttToken, 'base64')
+      console.log('decodedToken:', decodedToken)
+      decodedToken = decodedToken.toString('utf8')
+      console.log('decodedToken.toString:', decodedToken)
       this.mqttOps = Object.fromEntries(
         Object.entries(JSON.parse(decodedToken)).map(([ key, value ]) => [ key.toLowerCase(), value ]),
       ) as MqttOptions
