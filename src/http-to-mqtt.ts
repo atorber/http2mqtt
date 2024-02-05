@@ -21,9 +21,8 @@ type Headers = {
 
 // 定义接口：请求查询参数
 type Query = {
-  requesttopic?: string;
-  responsetopic?: string;
-  convert?: string;
+  _rule?: string;
+  _topic?: string;
   [key:string]: string | undefined;
 }
 
@@ -54,9 +53,8 @@ class Http2Mqtt {
   private ops: Options
   private mqttOps: MqttOptions
   private configOps: {
-    requesttopic?: string;
-    responsetopic?: string;
     convert?: string;
+    topic?: string;
   }
 
   constructor (ops: Options) {
@@ -87,17 +85,16 @@ class Http2Mqtt {
       ops.headers = headers as Headers
       this.mqttOps = headers as unknown as MqttOptions
     }
-    const { requesttopic, responsetopic, convert } = ops.query
+    const { topic, convert } = ops.query
     this.configOps = {
-      requesttopic, responsetopic, convert,
+      topic, convert,
     }
     // ops.query = Object.fromEntries(
     //   Object.entries(ops.query).map(([ key, value ]) => [ key.toLowerCase(), value ]),
     // ) as Query
 
-    if (ops.query.convert) delete ops.query.convert
-    if (ops.query.requesttopic) delete ops.query.requesttopic
-    if (ops.query.responsetopic) delete ops.query.responsetopic
+    if (ops.query._rule) delete ops.query._rule
+    if (ops.query._topic) delete ops.query._topic
 
     this.ops = ops
   }
@@ -112,19 +109,19 @@ class Http2Mqtt {
       secretkey: key,
     } = this.mqttOps
 
-    const { requesttopic, responsetopic, convert } = this.configOps
-    let pubTopic = requesttopic || ''
-    let subTopic = responsetopic || ''
+    const { convert, topic } = this.configOps
+    const reqId = v4()
+    let pubTopic = `http2mqtt/request/${reqId}`
+    let subTopic = `http2mqtt/response/${reqId}`
 
-    if (requesttopic === 'http2mqtt/test') {
-      subTopic = 'http2mqtt/test'
-      pubTopic = 'http2mqtt/test'
+    if (topic === 'http2mqtt/test') {
+      subTopic = `http2mqtt/test/${reqId}`
+      pubTopic = `http2mqtt/test/${reqId}`
     }
 
-    if (!pubTopic || !subTopic) {
-      const reqId = v4()
-      pubTopic = `http2mqtt/request/${reqId}`
-      subTopic = `http2mqtt/response/${reqId}`
+    if (topic) {
+      pubTopic = `${topic}/request/${reqId}`
+      subTopic = `${topic}/response/${reqId}`
     }
 
     let payload: any = this.ops
