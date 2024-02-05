@@ -63,12 +63,12 @@ class Http2Mqtt {
       Object.entries(ops.headers).map(([ key, value ]) => [ key.toLowerCase(), value ]),
     )
     if (headers['authorization']) {
-      console.log('headers中包含authorization\n', headers)
+      // console.log('headers中包含authorization\n', headers)
       // 对Authorization头部进行解析，删除开头的Bearer ，并对token进行base64解密
       const authorization = headers['authorization'] as string
-      console.debug(authorization)
+      // console.debug(authorization)
       const tokenJoin = authorization.split(' ')[1] as string
-      console.debug(tokenJoin)
+      // console.debug(tokenJoin)
       let mqttToken = ''
       let token = ''
       if (tokenJoin.includes('http2mqtt')) {
@@ -78,11 +78,11 @@ class Http2Mqtt {
       } else {
         mqttToken = tokenJoin
       }
-      console.debug(mqttToken)
+      // console.debug(mqttToken)
       let decodedToken:any = Buffer.from(mqttToken, 'base64')
-      console.log('decodedToken:', decodedToken)
+      // console.log('decodedToken:', decodedToken)
       decodedToken = decodedToken.toString('utf8')
-      console.log('decodedToken.toString:', decodedToken)
+      // console.log('decodedToken.toString:', decodedToken)
       this.mqttOps = Object.fromEntries(
         Object.entries(JSON.parse(decodedToken)).map(([ key, value ]) => [ key.toLowerCase(), value ]),
       ) as MqttOptions
@@ -141,7 +141,7 @@ class Http2Mqtt {
     }
 
     payload = JSON.stringify(payload)
-    console.debug('payload\n', payload)
+    // console.debug('payload\n', payload)
 
     // 如果存在密钥，对消息进行加密
     if (key) {
